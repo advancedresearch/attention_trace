@@ -1,0 +1,72 @@
+fn main() {
+    ~ squares := [
+        [false, (0, 0), (512, 512)]
+    ]
+    cursor := (0, 0)
+    hide := false
+    loop {
+        if !next_event() {break}
+        if render() {
+            ~ draw_list := []
+            clear(color: #ffffff)
+            w := hit(cursor)
+            j := if w && !hide {
+                w := why(w)
+                clone(w[0])
+            } else {
+                -1
+            }
+            for i {
+                black := if i == j {#00000050} else {#000000}
+                white := if i == j {#000000f0} else {#ffffff}
+                rectangle(
+                    color: if squares[i][0] {white} else {black},
+                    corner: squares[i][1],
+                    size: squares[i][2] - squares[i][1]
+                )
+            }
+            draw(draw_list)
+        }
+        if mouse_cursor() {
+            cursor = unwrap(mouse_cursor_pos())
+        }
+        if press() {
+            if press_keyboard_key() == some(104) {
+                hide = !hide
+            }
+            if !hide {
+                click(cursor)
+            }
+        }
+    }
+}
+
+hit(cursor) ~ squares = any i {
+    mi := squares[i][1]
+    ma := squares[i][2]
+    (x(cursor) >= x(mi)) &&
+    (y(cursor) >= y(mi)) &&
+    (x(cursor) <= x(ma)) &&
+    (y(cursor) <= y(ma))
+}
+fn click(cursor) ~ mut squares {
+    w := hit(cursor)
+    if w {
+        w := why(w)
+        i := w[0]
+        swap(mut squares, i, len(squares)-1)
+        sq := pop(mut squares)
+        b := if sq[0] {(0, 0)} else {(1, 1)}
+        cx := (x(sq[1]) + x(sq[2])) / 2
+        cy := (y(sq[1]) + y(sq[2])) / 2
+        k := 1
+        push(mut squares,
+            [!sq[0], sq[1] + b, (cx, cy) - k * b])
+        push(mut squares,
+            [!sq[0], (cx, y(sq[1])) + b, (x(sq[2]), cy) - k * b])
+        push(mut squares,
+            [!sq[0], (x(sq[1]), cy) + b, (cx, y(sq[2])) - k * b])
+        push(mut squares,
+            [!sq[0], (cx, cy) + b, sq[2] - k * b])
+    }
+}
