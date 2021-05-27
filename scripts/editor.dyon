@@ -1,3 +1,11 @@
+/*
+
+# Editor
+
+This editor is written in Dyon using Dyon-Interative (https://crates.io/crates/piston-dyon_interactive).
+
+*/
+
 fn main() {
     ~ squares := [
         [false, (0, 0), (512, 512)]
