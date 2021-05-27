@@ -13,10 +13,11 @@ fn main() {
     set_window(size: window_size)
 
     ~ squares := [
-        [false, (0, 0), (512, 512)]
+        [false, (0, 0), size, (0, 0), size]
     ]
     cursor := (0, 0)
     hide := false
+    border := true
     loop {
         if !next_event() {break}
         if render() {
@@ -29,13 +30,14 @@ fn main() {
             } else {
                 -1
             }
+            k := if border {0} else {2}
             for i {
                 black := if i == j {#00000050} else {#000000}
                 white := if i == j {#000000f0} else {#ffffff}
                 rectangle(
                     color: if squares[i][0] {white} else {black},
-                    corner: squares[i][1] + (margin, margin),
-                    size: squares[i][2] - squares[i][1]
+                    corner: squares[i][k+1] + (margin, margin),
+                    size: squares[i][k+2] - squares[i][k+1]
                 )
             }
             draw(draw_list)
@@ -45,10 +47,15 @@ fn main() {
         }
         if press() {
             if press_keyboard_key() == some(104) {
+                // H - hide.
                 hide = !hide
-            }
-            if !hide {
-                click(cursor)
+            } else if press_keyboard_key() == some(98) {
+                // B - border.
+                border = !border
+            } else {
+                if !hide {
+                    click(cursor)
+                }
             }
         }
     }
@@ -74,12 +81,16 @@ fn click(cursor) ~ mut squares {
         cy := (y(sq[1]) + y(sq[2])) / 2
         k := 1
         push(mut squares,
-            [!sq[0], sq[1] + b, (cx, cy) - k * b])
+            [!sq[0], sq[1] + b, (cx, cy) - k * b,
+                     sq[3], (cx, cy)])
         push(mut squares,
-            [!sq[0], (cx, y(sq[1])) + b, (x(sq[2]), cy) - k * b])
+            [!sq[0], (cx, y(sq[1])) + b, (x(sq[2]), cy) - k * b,
+                     (cx, y(sq[3])), (x(sq[4]), cy)])
         push(mut squares,
-            [!sq[0], (x(sq[1]), cy) + b, (cx, y(sq[2])) - k * b])
+            [!sq[0], (x(sq[1]), cy) + b, (cx, y(sq[2])) - k * b,
+                     (x(sq[3]), cy), (cx, y(sq[4]))])
         push(mut squares,
-            [!sq[0], (cx, cy) + b, sq[2] - k * b])
+            [!sq[0], (cx, cy) + b, sq[2] - k * b,
+                     (cx, cy), sq[4]])
     }
 }
