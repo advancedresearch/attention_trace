@@ -8,6 +8,7 @@ This editor is written in Dyon using Dyon-Interative (https://crates.io/crates/p
 
 - H: Hide/show hover rectangle
 - B: Hide/show attention trace (borders)
+- U: Undo last action
 
 */
 
@@ -16,6 +17,7 @@ fn main() {
     margin := 10
     window_size := size + 2 * (margin, margin)
     set_window(size: window_size)
+    ~ history := []
 
     ~ squares := [
         [false, (0, 0), size, (0, 0), size]
@@ -57,6 +59,21 @@ fn main() {
             } else if press_keyboard_key() == some(98) {
                 // B - border.
                 border = !border
+            } else if press_keyboard_key() == some(117) {
+                // U - undo.
+                if len(history) != 0 {
+                    last := pop(mut history)
+                    n := len(squares)
+                    for i n {
+                        j := n-i-1
+                        if inside(squares[j], last) {
+                            println(squares[j])
+                            swap(mut squares, j, len(squares)-1)
+                            _ := pop(mut squares)
+                        }
+                    }
+                    push(mut squares, last)
+                }
             } else {
                 if !hide {
                     click(cursor)
@@ -66,6 +83,11 @@ fn main() {
     }
 }
 
+inside(a: [], b: []) =
+    (x(a[4]) > x(b[3])) &&
+    (y(a[4]) > y(b[3])) &&
+    (x(a[3]) < x(b[4])) &&
+    (y(a[3]) < y(b[4]))
 hit(cursor) ~ squares = any i {
     mi := squares[i][1]
     ma := squares[i][2]
@@ -74,7 +96,7 @@ hit(cursor) ~ squares = any i {
     (x(cursor) <= x(ma)) &&
     (y(cursor) <= y(ma))
 }
-fn click(cursor) ~ mut squares {
+fn click(cursor) ~ mut squares, mut history {
     w := hit(cursor)
     if w {
         w := why(w)
@@ -97,5 +119,6 @@ fn click(cursor) ~ mut squares {
         push(mut squares,
             [!sq[0], (cx, cy) + b, sq[2] - k * b,
                      (cx, cy), sq[4]])
+        push(mut history, sq)
     }
 }
