@@ -7,6 +7,11 @@ This editor is written in Dyon using Dyon-Interative (https://crates.io/crates/p
 */
 
 fn main() {
+    size := (512, 512)
+    margin := 10
+    window_size := size + 2 * (margin, margin)
+    set_window(size: window_size)
+
     ~ squares := [
         [false, (0, 0), (512, 512)]
     ]
@@ -29,14 +34,14 @@ fn main() {
                 white := if i == j {#000000f0} else {#ffffff}
                 rectangle(
                     color: if squares[i][0] {white} else {black},
-                    corner: squares[i][1],
+                    corner: squares[i][1] + (margin, margin),
                     size: squares[i][2] - squares[i][1]
                 )
             }
             draw(draw_list)
         }
         if mouse_cursor() {
-            cursor = unwrap(mouse_cursor_pos())
+            cursor = unwrap(mouse_cursor_pos()) - (margin, margin)
         }
         if press() {
             if press_keyboard_key() == some(104) {
