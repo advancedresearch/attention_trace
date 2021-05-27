@@ -4,6 +4,11 @@
 
 This editor is written in Dyon using Dyon-Interative (https://crates.io/crates/piston-dyon_interactive).
 
+### Keyboard commands
+
+- H: Hide/show hover rectangle
+- B: Hide/show attention trace (borders)
+
 */
 
 fn main() {
