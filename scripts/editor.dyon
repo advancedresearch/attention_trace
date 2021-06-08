@@ -67,7 +67,6 @@ fn main() {
                     for i n {
                         j := n-i-1
                         if inside(squares[j], last) {
-                            println(squares[j])
                             swap(mut squares, j, len(squares)-1)
                             _ := pop(mut squares)
                         }
